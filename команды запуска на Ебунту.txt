@@ -1,0 +1,11 @@
+# 1. Создание виртуального окружения в папке venv
+python3 -m venv venv
+
+# 2. Активация виртуального окружения
+source venv/bin/activate
+
+# 3. Установка зависимостей из requirements.txt
+pip install -r requirements.txt
+
+# 4. Запуск скрипта
+python monad_trans_5po2.py
