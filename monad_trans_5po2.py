@@ -64,15 +64,16 @@ def send_transaction(from_wallet, to_wallet, private_key, gas_price_gwei, amount
     try:
         balance = w3.eth.get_balance(from_wallet)
         amount_to_send = w3.toWei(amount_mon, 'ether')
-        logging.info(f"Баланс {from_wallet}: {w3.fromWei(balance, 'ether')} MON")
+        logging.info(f"Баланс {from_wallet}: {w3.from_wei(balance, 'ether')} MON")
 
         if balance <= amount_to_send:
-            logging.warning(f"Недостаточный баланс на {from_wallet}: {w3.fromWei(balance, 'ether')} MON")
+            logging.warning(f"Недостаточный баланс на {from_wallet}: {w3.from_wei(balance, 'ether')} MON")
             return None
 
         gas_price_wei = w3.toWei(gas_price_gwei, 'gwei')
         gas_limit = 21000
         gas_cost = gas_limit * gas_price_wei
+        logging.info(f"Стоимость газа: {w3.from_wei(gas_cost, 'ether')} MON (Gas Price: {gas_price_gwei} Gwei)")
 
         if balance < (amount_to_send + gas_cost):
             logging.warning(f"Недостаточно средств для газа на {from_wallet}")
@@ -90,7 +91,7 @@ def send_transaction(from_wallet, to_wallet, private_key, gas_price_gwei, amount
         signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
         txn_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
         logging.info(f"Транзакция {txn_hash.hex()} отправлена от {from_wallet} к {to_wallet}: "
-                     f"{w3.fromWei(amount_to_send, 'ether')} MON (Gas Price: {gas_price_gwei} Gwei)")
+                     f"{w3.from_wei(amount_to_send, 'ether')} MON (Gas Price: {gas_price_gwei} Gwei)")
         return txn_hash.hex()
 
     except Exception as e:
@@ -110,7 +111,7 @@ def process_group(start_idx, end_idx, group_num):
 
         # Вычисление суммы как процента от баланса
         balance = w3.eth.get_balance(from_wallet)
-        balance_mon = float(w3.fromWei(balance, 'ether'))  # Баланс в MON, приведенный к float
+        balance_mon = float(w3.from_wei(balance, 'ether'))  # Баланс в MON, приведенный к float
         percent = random.uniform(0.03, 0.08)  # Случайный процент от 3% до 8%
         amount_mon = balance_mon * percent  # Сумма в MON для отправки
 
@@ -126,7 +127,7 @@ def process_group(start_idx, end_idx, group_num):
         start_time = time.time()
         while time.time() - start_time < TIMEOUT_SECONDS:
             current_balance_to = w3.eth.get_balance(to_wallet)
-            logging.info(f"Поток {group_num}: Проверка {to_wallet}: {w3.fromWei(current_balance_to, 'ether')} MON "
+            logging.info(f"Поток {group_num}: Проверка {to_wallet}: {w3.from_wei(current_balance_to, 'ether')} MON "
                          f"(см. {EXPLORER_URL}{to_wallet})")
 
             if current_balance_to > initial_balance_to:
